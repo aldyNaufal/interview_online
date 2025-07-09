@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Input Teks</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #9dbea4, #50cb47);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+        .btn-success {
+            width: 100%;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-success:hover {
+            background: #5fb86e;
+            color: white;
+        }
+        .loading {
+            display: none;
+        }
+        .input-group-text {
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+        }
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        #meet_url {
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #meet_url:focus {
+            background: rgba(255, 255, 255, 0.8);
+            outline: none;
+            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container text-white">
+        <label class="fw-bold">Masukkan Link Google Meet:</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-video"></i></span>
+            <input type="text" id="meet_url" class="form-control" placeholder="https://meet.google.com/xyz-abc-def" required>
+            <button onclick="joinMeet()" class="btn btn-success" style="width: 20%;">
+                <i class="fas fa-sign-in-alt"></i> Gabung
+            </button>
+            <div id="response_message"></div> <!-- Tempat menampilkan response -->
+        </div>
+        <label class="fw-bold" style="display: none;">Silahkan Masukkan GRIT:</label>
+        <div class="input-group mb-3" style="display: none;">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <textarea id="userInput" class="form-control" placeholder="Masukkan teks...">test</textarea>
+        </div>
+
+        <label class="fw-bold">Silahkan Masukkan JobDesc:</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+            <textarea id="jobInput" class="form-control" placeholder="Masukkan teks..."></textarea>
+        </div>
+
+        <label class="fw-bold">Silahkan Masukkan JobSpec:</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+            <textarea id="jobInput2" class="form-control" placeholder="Masukkan teks..."></textarea>
+        </div>
+
+        <button id="submitButton" class="btn btn-success btn-success">
+            <i class="fas fa-paper-plane"></i> Kirim
+        </button>
+
+        <div id="loading" class="text-center mt-3 loading">
+            <div class="spinner-border text-light" role="status"></div>
+            <p class="mt-2">Mengirim data...</p>
+        </div>
+    </div>
+
+    <script>
+        async function joinMeet() {
+            const meetUrl = document.getElementById("meet_url").value;
+            const responseMessage = document.getElementById("response_message");
+
+            if (!meetUrl) {
+                alert("Masukkan link Google Meet terlebih dahulu!");
+                return;
+            }
+
+            try {
+                const response = await fetch("/join-meet", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ meet_url: meetUrl }),
+                });
+
+                const result = await response.json();
+                responseMessage.innerHTML = `<p style="color: green;">${result.status}</p>`;
+            } catch (error) {
+                responseMessage.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${error.message}</p>`;
+            }
+        }
+
+        document.getElementById("submitButton").addEventListener("click", function() {
+            let input1 = document.getElementById("userInput").value;
+            let input2 = document.getElementById("jobInput").value;
+            let input3 = document.getElementById("jobInput2").value;
+
+            if (!input1 || !input2 || !input3) {
+                alert("Harap isi semua bidang teks!");
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+
+            fetch("/index", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    input1: input1,
+                    input2: input2,
+                    input3: input3
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("loading").style.display = "none";
+                window.location.href = "/index";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("loading").style.display = "none";
+                alert("Terjadi kesalahan saat mengirim data.");
+            });
+        });
+    </script>
+</body>
+</html>

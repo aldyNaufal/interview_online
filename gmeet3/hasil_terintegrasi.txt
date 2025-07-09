@@ -1,0 +1,6 @@
+Speaker SPEAKER_00: 1.38 - 4.98
+1, 2, 3, halo halo
+
+Speaker SPEAKER_00: 2.21 - 4.94
+dan
+
