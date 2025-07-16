@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  gmeet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kileorguy/gmeet
+    container_name: gmeet_recorder
+    restart: always
+    environment:
+      GROQ_API_KEY: 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
+      HF_TOKEN: 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
+      GMAIL_USER_EMAIL: botassistant4@gmail.com
+      GMAIL_USER_PASSWORD: botforassistant123
+      DURATION_IN_MINUTES: "1"            # Duration of the meeting to record
+      GLADIA_API_KEY: YOUR_GLADIA_API_KEY
+      GLADIA_DIARIZATION: "true"
+      MAX_WAIT_TIME_IN_MINUTES: "2"       # Max wait time in the lobby
+    volumes:
+      - ./recordings:/app/recordings      # Local storage for the recording
+      - ./screenshots:/app/screenshots    # Local storage for intermediate bot screenshots
+      - ./hasil_terintegrasi.txt:/app/hasil_terintegrasi.txt
+      - ./profile:/app/profile
+      # buat dev
+      # - .:/app
+    ports:
+      - "8071:5000"  # Port Flask di-mapping ke port 5000 di host
+    stdin_open: true
+    tty: true
+    networks:
+      - app-network
+  
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.10.124.0/24
+          gateway: 172.10.124.1
+
