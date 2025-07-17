@@ -203,6 +203,14 @@ export default function CVFilter() {
                     <span className="text-sm text-gray-500">{file ? `${file.name} (${(file.size / 1024).toFixed(1)} KB)` : "Drag & drop or click to select a ZIP file..."}</span>
                   </div>
                 </div>
+                <div class="flex items-center gap-2 bg-yellow-100 border-l-4 border-yellow-400 p-3 rounded">
+                  <svg class="w-5 h-5 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                  </svg>
+                  <span className="text-yellow-800 text-sm font-medium">
+                    Hanya menerima file <strong>.zip yang berisi file PDF</strong> untuk diunggah.
+                  </span>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
