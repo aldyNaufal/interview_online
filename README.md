@@ -1,17 +1,3 @@
-Got it ✅
-Let’s make a **complete documentation setup** for your repo that covers:
-
-1. **Root `README.md`** → Overview, features, setup, architecture, advice for next dev, demo link.
-2. **`client/README.md`** → Frontend-specific docs.
-3. **`server/README.md`** → Backend-specific docs.
-
-This way, the repo is professional, self-contained, and future developers get your advice.
-
----
-
-## 📄 Root `README.md`
-
-```markdown
 # 🎥 Interview Online
 
 An online interview platform with **real-time video conferencing**, **authentication**, **transcription**, and **admin controls**.  
@@ -30,6 +16,7 @@ Built with **React (frontend)** + **FastAPI (backend)** + **LiveKit (real-time m
 ---
 
 ## 📂 Project Structure
+
 ```
 
 interview_online/
@@ -157,77 +144,4 @@ If you want to test joining without setting up backend/AI:
    * Another app locking the camera/mic
    * Too high capture constraints (try 720p or 540p)
 
----
 
-### 🔹 Performance Tips
-
-* Use **local LiveKit** in dev, TURN in production
-* Set capture constraints (e.g., `1280x720 @ 24fps`)
-* Use **H.264** for widest compatibility
-* Enable **simulcast** for better multi-user scaling
-* Avoid unnecessary re-renders in React
-
----
-
-## 🤝 Contributing
-
-1. Fork repo
-2. Create a feature branch
-3. Commit your changes
-4. Open a PR
-
----
-
-````
-
----
-
-## 📄 `client/README.md`
-
-```markdown
-# 🎨 Frontend (Client)
-
-This is the **React frontend** for Interview Online.  
-It provides UI for authentication, room creation, and joining video calls.
-
----
-
-## 🚀 Features
-- React + Vite + TailwindCSS + shadcn/ui  
-- Auth & dashboard pages  
-- Video room (LiveKit SDK)  
-- Media controls (mic, camera, screen sharing)  
-- Meeting summaries panel  
-
----
-
-## ⚙️ Setup
-```bash
-cd client
-npm install
-npm run dev
-````
-
-Open: [http://localhost:5173](http://localhost:5173)
-
----
-
-## 📂 Structure
-
-```
-client/
-│── src/
-│   ├── components/   # UI components
-│   ├── hooks/        # Custom hooks (auth, meeting flow, media controls)
-│   ├── pages/        # Pages (login, dashboard, meeting)
-│   └── App.jsx       # Root component
-```
-
----
-
-## 🛠️ Tech Stack
-
-* React 18
-* TailwindCSS + shadcn/ui
-* React Router
-* LiveKit SDK
