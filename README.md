@@ -1,6 +1,6 @@
 # 🎥 Interview Online
 
-An online interview platform with **real-time video conferencing**, **authentication**, **transcription**, and **admin controls**.  
+An online interview platform with **real-time video conferencing**, **authentication**, **speech-to-text transcription**, and **AI-powered summaries**.  
 Built with **React (frontend)** + **FastAPI (backend)** + **LiveKit (real-time media)**.
 
 ---
@@ -110,6 +110,55 @@ LIVEKIT_API_KEY=testkey
 LIVEKIT_API_SECRET=testsecret
 ```
 
+
+---
+## 🤖 AI Features
+
+### 🔊 Speech-to-Text (ASR)
+We use HuggingFace’s pretrained model:  
+[`indonesian-nlp/wav2vec2-large-xlsr-indonesian`](https://huggingface.co/indonesian-nlp/wav2vec2-large-xlsr-indonesian)  
+
+- Converts Indonesian audio into text in real-time.  
+- Integrated with the meeting transcription service (`services/transcription_bot.py`).  
+- Can be swapped with other ASR models if needed.  
+
+---
+
+### 📝 Summarization & LLM
+We use a custom LLM service hosted at:  
+```
+
+[http://pe.spil.co.id/kobold/v1/chat/completions](http://pe.spil.co.id/kobold/v1/chat/completions)
+
+```
+
+- Takes transcripts as input.  
+- Generates **summaries** of meeting conversations.  
+- Designed to integrate with the backend’s `services/llm_service.py`.  
+
+API reference: [KoboldCpp API docs](https://lite.koboldai.net/koboldcpp_api#/v1/post_v1_audio_transcriptions)
+
+---
+
+### ⚡ Flow
+1. Audio from LiveKit → ASR model (wav2vec2 Indonesian).  
+2. Transcripts saved to DB.  
+3. LLM API generates summaries → displayed in frontend.  
+
+---
+
+## 📂 Project Structure
+```
+
+interview_online/
+│── client/   # React frontend
+│── server/   # FastAPI backend
+│   └── services/
+│       ├── transcription_bot.py   # Speech-to-Text integration
+│       └── llm_service.py         # LLM summarization integration
+│── README.md
+
+```
 ---
 
 ### 🔹 Demo
