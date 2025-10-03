@@ -67,6 +67,24 @@ DATABASE_URL=XXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ---
 
+
+## 🤖 AI Integrations
+
+### 🔊 Speech-to-Text (ASR)
+- Model: [wav2vec2-large-xlsr-indonesian](https://huggingface.co/indonesian-nlp/wav2vec2-large-xlsr-indonesian)  
+- Used for transcription during meetings.  
+- Runs inside `services/transcription_bot.py`.
+
+### 📝 LLM Summarization
+- Endpoint: `http://pe.spil.co.id/kobold/v1/chat/completions`  
+- API Docs: [KoboldCpp API](https://lite.koboldai.net/koboldcpp_api#/v1/post_v1_audio_transcriptions)  
+- Service implementation: `services/llm_service.py`.  
+- Generates **summaries** from full transcripts.  
+
+
+
+
+---
 ## 🛠️ Tech Stack
 
 * FastAPI
