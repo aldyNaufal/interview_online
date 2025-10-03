@@ -10,19 +10,27 @@ Built with **React (frontend)** + **FastAPI (backend)** + **LiveKit (real-time m
 - 🏠 Admin dashboard: create & manage rooms  
 - 🎥 Real-time video & audio (LiveKit)  
 - 📡 Screen sharing & media controls  
-- 📝 Transcription + AI-generated summaries  
+- 📝 Speech-to-Text (Indonesian) + AI summaries  
 - 📊 Room and user management with database  
 
 ---
 
 ## 📂 Project Structure
-
 ```
 
 interview_online/
-│── client/   # React frontend (docs inside client/README.md)
-│── server/   # FastAPI backend (docs inside server/README.md)
-│── README.md # Main documentation
+│── client/       # React frontend
+│── server/       # FastAPI backend
+│   ├── auth/
+│   ├── config/
+│   ├── database/
+│   ├── routes/
+│   ├── services/ # LiveKit, ASR, LLM services
+│   ├── scripts/  # Utility scripts (admin creation, AI tests)
+│   │   ├── create_admin.py  # Script to create an Admin user
+│   │   └── test_asr.py      # Script to test ASR transcription
+│   └── main.py
+│── README.md
 
 ````
 
@@ -43,7 +51,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ````
 
-Create `.env` in `server/`:
+`.env` file inside `server/`:
 
 ```
 LIVEKIT_URL=http://localhost:7880
@@ -64,35 +72,68 @@ Then open: `http://localhost:5173`
 
 ---
 
-## 🏗️ Architecture
+## 🤖 AI Features
 
-* **Frontend (React, Tailwind, shadcn/ui)** → UI & media controls
-* **Backend (FastAPI, SQLAlchemy, LiveKit API)** → Auth, room management, transcription
-* **Database (SQLite/Postgres)** → Users, rooms, transcripts
-* **AI Services** → Whisper (speech-to-text), LLM for summaries
+### 🔊 Speech-to-Text (ASR)
+
+* Model: [wav2vec2-large-xlsr-indonesian](https://huggingface.co/indonesian-nlp/wav2vec2-large-xlsr-indonesian)
+* Converts Indonesian audio into text.
+* Integrated via `services/transcription_bot.py`.
+* Test it directly:
+
+  ```bash
+  cd server/scripts
+  python test_asr.py
+  ```
 
 ---
 
-## 📡 API Endpoints
+### 📝 Summarization & LLM
 
-| Endpoint             | Method | Description       |
-| -------------------- | ------ | ----------------- |
-| `/api/auth/login`    | POST   | User login        |
-| `/api/auth/register` | POST   | User signup       |
-| `/api/rooms`         | GET    | List rooms        |
-| `/api/admin/room`    | POST   | Create room       |
-| `/api/join-room`     | POST   | Join room         |
-| `/api/token`         | POST   | Get LiveKit token |
+* Endpoint: `http://pe.spil.co.id/kobold/v1/chat/completions`
+* API Docs: [KoboldCpp API](https://lite.koboldai.net/koboldcpp_api#/v1/post_v1_audio_transcriptions)
+* Implemented in `services/llm_service.py`.
+* Used to summarize full meeting transcripts into structured notes.
+
+---
+
+### ⚡ Flow
+
+1. Audio → ASR (wav2vec2 Indonesian).
+2. Transcript stored in DB.
+3. LLM API → generates summary → displayed in frontend.
+
+---
+
+## 🧑‍💻 Admin & Scripts
+
+* **Create Admin User**
+
+  ```bash
+  cd server/scripts
+  python create_admin.py
+  ```
+
+  This lets you bootstrap the system with your first admin account.
+
+* **Test ASR Model**
+
+  ```bash
+  cd server/scripts
+  python test_asr.py
+  ```
+
+  Runs a quick check of the Indonesian speech-to-text pipeline.
 
 ---
 
 ## 👋 Notes for the Next Developer
 
-### 🔹 LiveKit setup
+### 🔹 LiveKit
 
-For better performance, deploy LiveKit locally. Docs: [LiveKit Docs](https://docs.livekit.io/)
+For better performance, run LiveKit locally. Docs: [LiveKit Docs](https://docs.livekit.io/)
 
-Quick start (Docker):
+Quick start:
 
 ```bash
 docker run --rm -it \
@@ -102,95 +143,22 @@ docker run --rm -it \
   --dev --bind 0.0.0.0
 ```
 
-`.env` config:
-
-```
-LIVEKIT_URL=http://localhost:7880
-LIVEKIT_API_KEY=testkey
-LIVEKIT_API_SECRET=testsecret
-```
-
-
----
-## 🤖 AI Features
-
-### 🔊 Speech-to-Text (ASR)
-We use HuggingFace’s pretrained model:  
-[`indonesian-nlp/wav2vec2-large-xlsr-indonesian`](https://huggingface.co/indonesian-nlp/wav2vec2-large-xlsr-indonesian)  
-
-- Converts Indonesian audio into text in real-time.  
-- Integrated with the meeting transcription service (`services/transcription_bot.py`).  
-- Can be swapped with other ASR models if needed.  
-
 ---
 
-### 📝 Summarization & LLM
-We use a custom LLM service hosted at:  
-```
+### 🔹 Demo (no AI, no auth)
 
-[http://pe.spil.co.id/kobold/v1/chat/completions](http://pe.spil.co.id/kobold/v1/chat/completions)
+* [https://mini-gmeet-frontend.vercel.app/](https://mini-gmeet-frontend.vercel.app/)
+* Create/join rooms at: [https://mini-gmeet-frontend.vercel.app/room](https://mini-gmeet-frontend.vercel.app/room)
 
-```
+⚠️ Demo limitations:
 
-- Takes transcripts as input.  
-- Generates **summaries** of meeting conversations.  
-- Designed to integrate with the backend’s `services/llm_service.py`.  
-
-API reference: [KoboldCpp API docs](https://lite.koboldai.net/koboldcpp_api#/v1/post_v1_audio_transcriptions)
-
----
-
-### ⚡ Flow
-1. Audio from LiveKit → ASR model (wav2vec2 Indonesian).  
-2. Transcripts saved to DB.  
-3. LLM API generates summaries → displayed in frontend.  
-
----
-
-## 📂 Project Structure
-```
-
-interview_online/
-│── client/   # React frontend
-│── server/   # FastAPI backend
-│   └── services/
-│       ├── transcription_bot.py   # Speech-to-Text integration
-│       └── llm_service.py         # LLM summarization integration
-│── README.md
-
-```
----
-
-### 🔹 Demo
-
-If you want to test joining without setting up backend/AI:
-
-* Open: [https://mini-gmeet-frontend.vercel.app/](https://mini-gmeet-frontend.vercel.app/)
-* Go to: [https://mini-gmeet-frontend.vercel.app/room](https://mini-gmeet-frontend.vercel.app/room)
-* Create a room and share the link with a friend
-
-⚠️ Limitations of demo:
-
-* ❌ No password/room ID checks
-* ❌ No AI features
-* ✅ Just quick video/audio join
+* ❌ No password / room-ID checks
+* ❌ No AI transcription/summaries
 
 ---
 
 ### 🔹 Common Issues
 
-1. **Connection failed / can’t join**
-
-   * LiveKit URL mismatch between frontend & backend
-   * CORS/mixed `http` vs `https`
-   * Wrong room/auth parameters
-   * Firewall/VPN blocking UDP
-   * Token expired (check system clock)
-
-2. **Token OK, but no audio/video**
-
-   * Browser permissions denied
-   * Another app locking the camera/mic
-   * Too high capture constraints (try 720p or 540p)
-
-
+* **Connection failed / can’t join** → check LiveKit URL, CORS, or system clock
+* **Token minted but no media** → check camera/mic permissions
+* **Firewall/VPN issues** → may block UDP → need TURN server
